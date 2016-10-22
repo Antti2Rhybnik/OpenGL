@@ -15,7 +15,6 @@
 #include "morpher.hpp"
 
 
-int loopDelay = 0;
 glm::vec3 cameraPos = glm::vec3(1.0f, 0.5f, 0.0f);
 glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -26,6 +25,9 @@ Sphere* sphere = nullptr;
 Cylinder* cylinder = nullptr;
 Morpher* morpher1 = nullptr;
 Morpher* morpher2 = nullptr;
+
+
+static int options = 0;
 
 
 static void initFigures() {
@@ -117,6 +119,11 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action, 
     }
 
 
+    if (key == GLFW_KEY_1) {
+
+    }
+
+
 }
 
 static void drawCameraTarget() {
@@ -135,7 +142,18 @@ static void drawCameraTarget() {
 }
 
 
+
+
 static void rotateAndIncrease() {
+    //Выполнить последовательно сначала поворот цилиндра вокруг оси Х, а затем растяжение тора в 2 раза
+    static int rotateAndIncreaseCounter = 0;
+
+    if (rotateAndIncreaseCounter >= 0 && rotateAndIncreaseCounter < 50)
+        cylinder->rotateZ(3.1, glm::vec2(0, 0));
+    if (rotateAndIncreaseCounter >= 50  && rotateAndIncreaseCounter < 100)
+        tor->increase(1.01);
+    if (rotateAndIncreaseCounter >= 100) return;
+    rotateAndIncreaseCounter++;
 
 }
 
@@ -162,24 +180,19 @@ void display(GLFWwindow *window) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     drawCameraTarget();
-//    glColor3f(0.f, 0.f, 1.f);
+    glColor3f(0.f, 0.f, 1.f);
     tor->drawGL(GL_LINE_LOOP);
-//    glColor3f(1.f, 0.f, 1.f);
+    glColor3f(1.f, 0.f, 1.f);
+    cylinder->drawGL(GL_LINE_LOOP);
 //    glColor3f(1.f, 0.f, 0.f);
 //    sphere.drawGL(GL_LINE_LOOP);
-//    cylinder->drawGL(GL_LINE_LOOP);
 //    cone.drawGL(GL_LINE_LOOP);
 //    cylinder.drawGL(GL_TRIANGLES);
 
-
-
+    // animations
+    static int loopDelay = 0;
     if (loopDelay++ % 3 == 0) {
-//        cylinder.rotateZ(3, glm::vec2(0, 0));
-//        sphere.rotateX(3, glm::vec2(0, 0));
-//        cone.rotateZ(3, glm::vec2(0, 0));
-        tor->increase(0.99);
-        morpher1->morph();
-        morpher2->morph();
+        rotateAndIncrease();
     }
 
 
